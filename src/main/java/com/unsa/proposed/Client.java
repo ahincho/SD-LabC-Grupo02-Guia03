@@ -15,9 +15,11 @@ public class Client {
     private Socket socket; // Socket Object
     private String server, username;// Server and Username
     private int port; //Port
+    // Recover the User's name
     public String getUsername() {
         return username;
     }
+    // Inicialize the User's name
     public void setUsername(String username) {
         this.username = username;
     }
@@ -56,7 +58,7 @@ public class Client {
             display("Exception creating new Input/output Streams: " + eIO);
             return false;
         }
-        // creates the Thread to listen from the server
+        // Creates the Thread to listen from the server
         new ListenFromServer().start();
         // Send our username to the server this is the only message that we
         // will send as a String. All other messages will be ChatMessage objects
@@ -68,7 +70,7 @@ public class Client {
             disconnect();
             return false;
         }
-        // success we inform the caller that it worked
+        // Success we inform the caller that it worked
         return true;
     }
     /*
@@ -124,7 +126,6 @@ public class Client {
     * If the serverAddress is not specified "localHost" is used
     * If the username is not specified "Anonymous" is used
     */
-    
     public static void main(String[] args) {
         // Default values if not entered
         int portNumber = 1500;
@@ -136,12 +137,10 @@ public class Client {
         // Different case according to the length of the arguments.
         switch(args.length) {
             case 3:
-                // for > javac Client username portNumber serverAddr
-                serverAddress = args[2];
+                serverAddress = args[2]; // For > javac Client username portNumber serverAddr
             case 2:
-                // for > javac Client username portNumber
                 try {
-                    portNumber = Integer.parseInt(args[1]);
+                    portNumber = Integer.parseInt(args[1]); // For > javac Client username portNumber
                 }
                 catch(Exception e) {
                     System.out.println("Invalid port number.");
@@ -150,12 +149,9 @@ public class Client {
                     return;
                 }
             case 1:
-                // for > javac Client username
-                userName = args[0];
+                userName = args[0]; // For > javac Client username
             case 0:
-                // for > java Client
-                break;
-                // if number of arguments are invalid
+                break; // For > java Client ; If number of arguments are invalid
             default:
                 System.out.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
                 scan.close();
@@ -163,8 +159,7 @@ public class Client {
         }
         // Create the Client object
         Client client = new Client(serverAddress, portNumber, userName);
-        // try to connect to the server and return if not connected
-        if(!client.start()) {
+        if(!client.start()) { // Try to connect to the server and return if not connected
             scan.close();
             return;
         }
@@ -174,22 +169,18 @@ public class Client {
         System.out.println("2. Type '@username<space>yourmessage' without quotes to send message to desired client");
         System.out.println("3. Type 'WHOISIN' without quotes to see list of active clients");
         System.out.println("4. Type 'LOGOUT' without quotes to logoff from server");
-        // Infinite loop to get the input from the user
-        while(true) {
-            System.out.print("> ");
-            // read message from user
-            String msg = scan.nextLine();
-            // logout if message is LOGOUT
-            if(msg.equalsIgnoreCase("LOGOUT")) {
+        while(true) { // Infinite loop to get the input from the user
+            System.out.print("> "); // Prompt line
+            String msg = scan.nextLine(); // Read message from user
+            if (msg.equalsIgnoreCase("LOGOUT")) {
+                // Logout if message is LOGOUT
                 client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
                 break;
-            }
-            // message to check who are present in chatroom
-            else if(msg.equalsIgnoreCase("WHOISIN")) {
+            } else if (msg.equalsIgnoreCase("WHOISIN")) {
+                // Message to check who are present in chatroom
                 client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));
-            }
-            // regular text message
-            else {
+            } else {
+                // Regular text message
                 client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg));
             }
         }
@@ -203,11 +194,11 @@ public class Client {
     */
     class ListenFromServer extends Thread {
         public void run() {
-            while(true) {
+            while(true) { // Busy waiting
                 try {
-                // read the message form the input datastream
+                // Read the message form the input datastream
                 String msg = (String) sInput.readObject();
-                // print the message
+                // Print the message
                 System.out.println(msg);
                 System.out.print("> ");
                 }
